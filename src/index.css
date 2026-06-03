@@ -7,12 +7,21 @@
   --color-brand-orange: #EA580C;
 }
 
+@variant dark (&:where(.dark, .dark *));
+
 body {
   font-family: var(--font-sans);
-  background-color: #F3F4F6;
-  color: #111827;
+  background-color: #F8FAFC;
+  color: #0F172A;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.dark body {
+  background-color: #090D16;
+  color: #F1F5F9;
 }
 
 .mono {
   font-family: var(--font-mono);
 }
+

@@ -18,10 +18,28 @@ import {
   Network, 
   Info,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 export default function App() {
+  // Estado do Modo Escuro (Dark Mode)
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    const saved = localStorage.getItem('arcelormittal_esg_darkmode');
+    return saved === 'true';
+  });
+
+  // Toggle do dark mode no HTML e salvamento local
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('arcelormittal_esg_darkmode', String(darkMode));
+  }, [darkMode]);
+
   // Estado database central carregado inicialmente a partir de localStorage
   const [records, setRecords] = useState<MonthlyDataRecord[]>(() => {
     const saved = localStorage.getItem('arcelormittal_esg_records');
@@ -65,10 +83,10 @@ export default function App() {
   const alertCount = GENERATE_ALERTS(records).length;
 
   return (
-    <div className="min-h-screen bg-[#F3F4F6] text-[#111827] flex flex-col font-sans" id="root-layout-app">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#070A11] text-slate-800 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200" id="root-layout-app">
       
       {/* 1. TOP NAVBAR: IDENTIDADE ARCELORMITTAL + DESIGN DE ALTA DENSIDADE */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-xs h-16 flex items-center shrink-0">
+      <header className="sticky top-0 z-50 bg-white dark:bg-[#0E1524] border-b border-gray-200 dark:border-slate-800 shadow-xs h-16 flex items-center shrink-0 transition-colors duration-200">
         <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             
@@ -80,12 +98,12 @@ export default function App() {
               </div>
               <div className="leading-tight">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-bold text-sm tracking-tight text-gray-950">ArcelorMittal</span>
-                  <span className="text-[9px] bg-[#EA580C]/10 text-[#EA580C] font-extrabold px-1.5 py-0.5 rounded-xs uppercase tracking-widest font-mono">
+                  <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-white">ArcelorMittal</span>
+                  <span className="text-[9px] bg-[#EA580C]/10 text-[#EA580C] dark:bg-[#EA580C]/20 dark:text-orange-400 font-extrabold px-1.5 py-0.5 rounded-xs uppercase tracking-widest font-mono">
                     Plataforma ESG
                   </span>
                 </div>
-                <p className="text-[9px] text-gray-500 font-semibold uppercase tracking-wider">
+                <p className="text-[9px] text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider">
                   Descarbonização & Guardrails
                 </p>
               </div>
@@ -93,14 +111,14 @@ export default function App() {
 
             {/* Centro / Direita: Tabs de Ação Estilizados Compactos (High Density) */}
             <div className="flex items-center gap-3">
-              <nav className="flex space-x-1 bg-gray-100 p-1 rounded-sm border border-gray-200">
+              <nav className="flex space-x-1 bg-gray-100 dark:bg-[#151D2F] p-1 rounded-sm border border-gray-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setActiveTab('dashboard')}
                   className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-sm transition-all ${
                     activeTab === 'dashboard'
                       ? 'bg-[#EA580C] text-white shadow-sm'
-                      : 'text-gray-600 hover:text-gray-950 hover:bg-gray-200/50'
+                      : 'text-gray-650 dark:text-slate-400 hover:text-gray-950 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-slate-800'
                   }`}
                   id="tab-btn-dashboard"
                 >
@@ -114,7 +132,7 @@ export default function App() {
                   className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-sm transition-all ${
                     activeTab === 'form'
                       ? 'bg-[#EA580C] text-white shadow-sm'
-                      : 'text-gray-600 hover:text-gray-950 hover:bg-gray-200/50'
+                      : 'text-gray-655 dark:text-slate-400 hover:text-gray-950 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-slate-800'
                   }`}
                   id="tab-btn-form"
                 >
@@ -129,7 +147,7 @@ export default function App() {
                   className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-sm transition-all ${
                     activeTab === 'architecture'
                       ? 'bg-[#EA580C] text-white shadow-sm'
-                      : 'text-gray-600 hover:text-gray-950 hover:bg-gray-200/50'
+                      : 'text-gray-655 dark:text-slate-400 hover:text-gray-950 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-slate-800'
                   }`}
                   id="tab-btn-architecture"
                 >
@@ -138,8 +156,23 @@ export default function App() {
                 </button>
               </nav>
 
+              {/* Botão Seletor de Modo Escuro (Dark Mode Toggle) */}
+              <button
+                type="button"
+                onClick={() => setDarkMode(!darkMode)}
+                className="p-2 bg-gray-50 dark:bg-[#151D2F] hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-slate-400 rounded-sm border border-gray-200 dark:border-slate-800 cursor-pointer transition-colors"
+                title={darkMode ? "Mudar para Modo Claro" : "Mudar para Modo Escuro"}
+                id="theme-toggle-btn"
+              >
+                {darkMode ? (
+                  <Sun className="h-4 w-4 text-amber-500 hover:rotate-45 transition-transform" />
+                ) : (
+                  <Moon className="h-4 w-4 text-indigo-500" />
+                )}
+              </button>
+
               {/* Botões Auxiliares Rápidos / Alerta Geral Badge */}
-              <div className="relative p-2 bg-gray-50 hover:bg-gray-100 text-gray-500 rounded-sm border border-gray-200 hidden sm:block">
+              <div className="relative p-2 bg-gray-50 dark:bg-[#151D2F] text-gray-500 dark:text-slate-400 rounded-sm border border-gray-200 dark:border-slate-800 hidden sm:block">
                 <AlertCircle className="h-4 w-4 text-[#EA580C]" />
                 {alertCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-[8px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center font-mono shadow-xs">
@@ -157,27 +190,31 @@ export default function App() {
       <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         
         {/* BANNER INFORMATIVO CORPORATIVO - COMPACTO E RETANGULAR */}
-        <div className="mb-4 p-4 bg-white border border-gray-200 border-l-4 border-l-[#EA580C] rounded-sm flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs text-gray-800 shadow-xs" id="corporate-intro-banner">
+        <div className="mb-4 p-4 bg-white dark:bg-[#0E1524] border border-gray-200 dark:border-slate-800 border-l-4 border-l-[#EA580C] rounded-sm flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs text-gray-800 dark:text-slate-300 shadow-xs transition-colors duration-200" id="corporate-intro-banner">
           <div className="flex items-start gap-2.5">
             <Info className="h-4 w-4 text-[#EA580C] shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold uppercase text-[9px] tracking-wider text-gray-400 block font-mono">Diretriz de Sustentabilidade ArcelorMittal</span>
-              <p className="text-gray-700 mt-0.5 leading-relaxed font-sans">
+              <span className="font-bold uppercase text-[9px] tracking-wider text-gray-400 dark:text-slate-400 block font-mono">Diretriz de Sustentabilidade ArcelorMittal</span>
+              <p className="text-gray-700 dark:text-slate-300 mt-0.5 leading-relaxed font-sans">
                 Este console monitora os Escopos de Emissões de CO₂ e metas de descarbonização da ArcelorMittal Brasil. Os dados subsidiam relatórios de créditos de carbono, compliance CBAM/EU-ETS e o monitoramento voluntário das metas de <strong>Siderurgia Circular</strong>.
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-sm border border-gray-200 shrink-0 self-start md:self-auto font-mono text-[9px] text-gray-600 font-bold uppercase tracking-wider">
+          <div className="flex items-center gap-2 bg-gray-50 dark:bg-[#151D2F] p-2 rounded-sm border border-gray-200 dark:border-slate-800 shrink-0 self-start md:self-auto font-mono text-[9px] text-gray-600 dark:text-slate-400 font-bold uppercase tracking-wider">
             <Calendar className="h-3.5 w-3.5 text-[#EA580C]" />
             Ativo — Exercício 2026
           </div>
         </div>
 
         {/* BARRA DE CONTROLE DE BANCO DE DADOS EM TEMPO DE EXECUÇÃO */}
-        <div className="mb-4 px-4 py-2.5 bg-white border border-gray-200 rounded-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-[10px] font-mono shadow-6xs" id="database-manager-bar">
+        <div className="mb-4 px-4 py-2.5 bg-white dark:bg-[#0E1524] border border-gray-200 dark:border-slate-800 rounded-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-[10px] font-mono shadow-6xs transition-colors duration-200" id="database-manager-bar">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-gray-450 uppercase tracking-widest text-[9px]">Banco de Dados:</span>
-            <span className={`font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wide text-[9px] ${records.length > 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-amber-50 text-amber-700 border border-amber-100'}`}>
+            <span className="font-bold text-gray-450 dark:text-slate-400 uppercase tracking-widest text-[9px]">Banco de Dados:</span>
+            <span className={`font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wide text-[9px] ${
+              records.length > 0 
+                ? 'bg-emerald-50 text-emerald-700 border border-emerald-100 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-950/20' 
+                : 'bg-amber-50 text-amber-700 border border-amber-100 dark:bg-amber-950/20 dark:text-amber-400 dark:border-amber-950/20'
+            }`}>
               {records.length} {records.length === 1 ? 'REGISTRO ATIVO' : 'REGISTROS ATIVOS'} (PERSISTÊNCIA LOCAL)
             </span>
           </div>
@@ -189,12 +226,12 @@ export default function App() {
                   setRecords(prev => [...getDemoRecords(), ...prev]);
                 }
               }}
-              className="text-[#EA580C] hover:text-orange-700 hover:underline font-bold uppercase cursor-pointer"
+              className="text-[#EA580C] hover:text-orange-700 dark:hover:text-amber-400 hover:underline font-bold uppercase cursor-pointer"
               title="Anexa 5 registros mensais reais de referência (Maio/2026) para simular o comportamento completo dos gráficos e alertas."
             >
               [+] Carregar Medições Exemplo
             </button>
-            <span className="text-gray-300 hidden sm:inline">|</span>
+            <span className="text-gray-300 dark:text-slate-700 hidden sm:inline">|</span>
             <button
               type="button"
               onClick={() => {
@@ -202,7 +239,7 @@ export default function App() {
                   setRecords([]);
                 }
               }}
-              className="text-rose-650 hover:text-rose-800 hover:underline font-bold uppercase cursor-pointer"
+              className="text-rose-650 hover:text-rose-800 dark:hover:text-red-400 hover:underline font-bold uppercase cursor-pointer"
               title="Limpa completamente o banco de dados local do seu navegador."
             >
               [-] Limpar Todo o Histórico
@@ -235,10 +272,10 @@ export default function App() {
       </main>
 
       {/* 3. CORE FOOTER - BRANCO COM DETALHE COMPACTO E LIMPO */}
-      <footer className="bg-white text-gray-600 py-4 border-t border-gray-200 text-xs mt-6 select-none">
+      <footer className="bg-white dark:bg-[#0E1524] text-gray-600 dark:text-slate-400 py-4 border-t border-gray-200 dark:border-slate-800 text-xs mt-6 select-none transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="p-1 bg-gray-100 rounded-sm border border-gray-200">
+            <div className="p-1 bg-gray-100 dark:bg-[#151D2F] rounded-sm border border-gray-200 dark:border-slate-800">
               <Flame className="h-3.5 w-3.5 text-[#EA580C]" />
             </div>
             <div>
