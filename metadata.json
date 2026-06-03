@@ -1,0 +1,6 @@
+{
+  "name": "ArcelorMittal ESG & Decarbonização",
+  "description": "Painel de controle industrial para monitoramento de emissões de CO₂ (Escopo 1 e 2), consumo de energia e reciclagem de sucata focando nas metas de Aço Verde.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
